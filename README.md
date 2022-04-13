@@ -124,3 +124,4 @@ export VERSION=$(jq -r .version simulator/package.json)
 docker build -t kipr/simulator:$VERSION .
 docker run -ti -p 3000:3000 kipr/simulator:$VERSION
 ```
+# Simulator_InfoBlob
