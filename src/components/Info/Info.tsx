@@ -1,3 +1,4 @@
+//This is my updated Info for the Info_change branch
 import * as React from 'react';
 
 import { styled } from 'styletron-react';
@@ -11,13 +12,14 @@ import { StyledText } from '../../util';
 import { Location } from './Location';
 import { RobotPosition } from '../../RobotPosition';
 import { Fa } from '../Fa';
-
+import RegisterState from '../../RegisterState'
 
 export interface InfoProps extends StyleProps, ThemeProps {
   robotState: RobotState;
   robotStartPosition: RobotPosition;
 
   onSetRobotStartPosition: (position: RobotPosition) => void;
+  
 }
 
 interface InfoState {
@@ -69,16 +71,20 @@ const ICON_STYLE: React.CSSProperties = {
   marginRight: '5px'
 };
 
+const BUTTON_NAME = StyledText.text({
+  text: 'Buttons Box',
+});
+
 const SIMULATION_NAME = StyledText.text({
   text: 'Simulation',
 });
 
 const SERVOS_NAME = StyledText.text({
-  text: 'Servos',
+  text: 'Servos Here',
 });
 
 const MOTOR_VELOCITIES_NAME = StyledText.text({
-  text: 'Motor Velocities',
+  text: 'Motor Velocities Here',
 });
 
 const MOTOR_POSITIONS_NAME = StyledText.compose({
@@ -106,6 +112,37 @@ const ResetIcon = styled(Fa, ({ theme }: ThemeProps) => ({
   transition: 'opacity 0.2s'
 }));
 
+
+
+const ButtonStyle = styled("button", props =>  ({
+
+    color: "white",
+    background: "#3d3b3b",
+    border: "outset",
+    borderRadius: '10px',
+    padding: '10px',
+    width: '45px',
+    marginLeft: '5px',
+    marginRight: '20px',
+    alignContent: "center",
+    font: 'inherit',
+    cursor: 'pointer',
+        
+    })
+);
+
+const ButtonGroup = styled("button", props => ({
+    
+    marginLeft: '60px',
+    backgroundColor: 'transparent',
+    border: 'transparent',
+    })
+);
+        
+     
+
+
+
 class Info extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
@@ -123,12 +160,33 @@ class Info extends React.PureComponent<Props, State> {
       }
     });
   };
-
+ 
   private onResetLocationClick_ = (event: React.MouseEvent<HTMLSpanElement>) => {
     event.preventDefault();
     event.stopPropagation();
     this.props.onSetRobotStartPosition(this.props.robotStartPosition);
   };
+
+  
+   private buttonClick = option =>{
+    switch(option) {
+        case "A": {
+             this.props.robotState.buttons.a = 1;
+            alert(this.props.robotState.buttons.a + ' ' + ((RegisterState.REG_RW_BUTTONS >> 0) & 1));
+            
+            break;
+        };
+            
+        case "B":
+            alert(this.props.robotState.buttons.b + ' ' + ((RegisterState.REG_RW_BUTTONS >> 1) & 1));
+            break;
+        case "C":
+            alert(this.props.robotState.buttons.c);
+            break;
+        default:
+            break;
+    }
+   };
 
   render() {
     const { props, state } = this;
@@ -157,6 +215,25 @@ class Info extends React.PureComponent<Props, State> {
       ]
     });
 
+
+
+
+ const ButtonObject = () => {
+          return (
+            <>
+                <ButtonGroup>
+                    <ButtonStyle onClick = {() => this.buttonClick("A")}> A </ButtonStyle>
+                    <ButtonStyle onClick = {() => this.buttonClick("B")}> B </ButtonStyle>
+                    <ButtonStyle onClick = {() => this.buttonClick("C")}> C </ButtonStyle>
+                </ButtonGroup>
+            </>
+ );
+         
+};  
+
+
+
+  
     const servos = robotState.servoPositions.map((value, i) => (
       <Row key={`servo-pos-${i}`} theme={theme}>
         <SensorWidget value={value} name={`get_servo_position(${i})`} plotTitle='Servo Position Plot' theme={theme} />
@@ -201,6 +278,15 @@ class Info extends React.PureComponent<Props, State> {
               onSetRobotStartPosition={this.props.onSetRobotStartPosition}
               theme={theme}
             />
+          </StyledSection>
+          <StyledSection
+            name = {BUTTON_NAME}
+            theme = {theme}
+            onCollapsedChange={this.onCollapsedChange_('button_pos')}
+            collapsed={collapsed['button_pos']}
+          >
+            
+          {ButtonObject()}
           </StyledSection>
           <StyledSection
             name={SERVOS_NAME}
